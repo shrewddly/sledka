@@ -304,10 +304,21 @@ body{font-family:var(--font,Onest),system-ui,-apple-system,"Segoe UI",Roboto,san
 .wf div{animation:up .5s var(--ease) both}.wf div:nth-child(2){animation-delay:.08s}.wf div:nth-child(3){animation-delay:.16s}
 .wlogo{animation:wpop .7s var(--ease) both}@keyframes wpop{from{transform:scale(.6) rotate(-8deg);opacity:0}}
 .eill circle{animation:wpop .6s var(--ease) both}.eill circle:nth-child(2){animation-delay:.1s}.eill circle:nth-child(3){animation-delay:.2s}.eill circle:nth-child(4){animation-delay:.3s}.eill circle:nth-child(5){animation-delay:.4s}
-.mrow2{animation:up .35s var(--ease) both}.mrow2:nth-child(2){animation-delay:.04s}.mrow2:nth-child(3){animation-delay:.08s}.mrow2:nth-child(4){animation-delay:.12s}.mrow2:nth-child(5){animation-delay:.16s}.mrow2:nth-child(6){animation-delay:.2s}.mrow2:nth-child(7){animation-delay:.24s}
+.mrow2{animation:up .35s var(--ease) both}.mrow2:nth-child(2){animation-delay:.04s}.mrow2:nth-child(3){animation-delay:.08s}.mrow2:nth-child(4){animation-delay:.12s}.mrow2:nth-child(5){animation-delay:.16s}.mrow2:nth-child(6){animation-delay:.2s}.mrow2:nth-child(7){animation-delay:.24s}.mrow2:nth-child(8){animation-delay:.28s}.mrow2:nth-child(9){animation-delay:.32s}
 .mrow2:active{transform:scale(.98)}
 }
 @supports not (background:color-mix(in srgb,red,blue)){.hero,.hf,.seg,.mrow2,.wf div{background:var(--surface)}.tabbar .ind{background:var(--line)}}
+.more{border:1px dashed var(--line);border-radius:14px;padding:0 12px}
+.more>summary{cursor:pointer;color:var(--accent);font-weight:700;min-height:44px;display:flex;align-items:center;list-style:none}.more>summary::-webkit-details-marker{display:none}
+.more>summary::after{content:"+";margin-left:auto;font-size:1.3rem;transition:transform .3s var(--ease)}.more[open]>summary::after{transform:rotate(45deg)}
+.more>*:not(summary){margin-bottom:10px}.more>summary+*{margin-top:4px}
+.demob{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 12px;padding:10px 14px;border-radius:16px;background:color-mix(in srgb,var(--accent) 14%,var(--surface));border:1px dashed var(--accent);font-size:.9rem}.demob[hidden]{display:none}
+.hq{width:22px;height:22px;min-height:0;padding:0;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--muted);font-weight:800;font-size:.75rem;line-height:1}
+.tip{border-left:4px solid var(--accent)}
+.hlp{margin:8px 0}.hlp>summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center;list-style:none;border-top:1px solid var(--line)}.hlp>summary::-webkit-details-marker{display:none}
+.hlp>summary::after{content:"›";margin-left:auto;font-size:1.3rem;color:var(--muted);transition:transform .3s var(--ease)}.hlp[open]>summary::after{transform:rotate(90deg)}
+.hlp p{margin:0 0 12px;color:var(--muted);line-height:1.5}
+@supports not (background:color-mix(in srgb,red,blue)){.demob{background:var(--surface)}}
 </style>
 </head>
 <body>
@@ -315,7 +326,8 @@ body{font-family:var(--font,Onest),system-ui,-apple-system,"Segoe UI",Roboto,san
   <header class="top"><div class="hl"><div class="brand"><svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lgg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#14A39A"/><stop offset="1" stop-color="#0B5E5A"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(#lgg)"/><circle cx="13" cy="50" r="2.6" fill="#fff" opacity=".35"/><circle cx="20" cy="45" r="3.3" fill="#fff" opacity=".55"/><path d="M22 33l9 9 17-20" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>След</span></div><h1 id="h1">Привычки</h1></div><button class="avatar" id="prof" aria-label="Профиль и настройки">☺</button></header>
   <p class="sub" id="today"></p>
   <div class="pbar" id="pbar" hidden><i id="pfill"></i></div>
-  <section class="hero" id="hero" hidden><div class="hr"><svg viewBox="0 0 100 100" aria-hidden="true"><circle class="hbg" cx="50" cy="50" r="42"/><circle class="hfg" id="hrc" cx="50" cy="50" r="42" transform="rotate(-90 50 50)"/></svg><div class="hn"><b id="hrn">0</b><small id="hrm">из 0</small></div></div><div class="ht"><div class="htt" id="htt"></div><div class="hts" id="hts"></div><div class="hf" id="hf" hidden><span class="fl">🔥</span><b id="hfn">0</b><small>дн. серия</small></div></div></section>
+  <section class="hero" id="hero" hidden><div class="hr"><svg viewBox="0 0 100 100" aria-hidden="true"><circle class="hbg" cx="50" cy="50" r="42"/><circle class="hfg" id="hrc" cx="50" cy="50" r="42" transform="rotate(-90 50 50)"/></svg><div class="hn"><b id="hrn">0</b><small id="hrm">из 0</small></div></div><div class="ht"><div class="htt" id="htt"></div><div class="hts" id="hts"></div><div class="hf" id="hf" hidden><span class="fl">🔥</span><b id="hfn">0</b><small>дн. серия</small><button class="hq" id="hq" aria-label="Что такое серия">?</button></div></div></section>
+  <div class="demob" id="demob" hidden><span>👀 Это пример. Ваши данные не затронуты.</span><button class="mini" id="demoExit">Начать своё</button></div>
   <div class="seg" id="seg" hidden><button data-v="w">Неделя</button><button data-v="m">Месяц</button></div>
   <div class="hint" id="authHint" hidden><span>Данные хранятся на этом устройстве. Войдите, чтобы не потерять их и открывать на других устройствах.</span><button class="mini" id="authOpen">Войти</button></div>
   <section class="habit" id="auth" hidden>
@@ -337,6 +349,8 @@ body{font-family:var(--font,Onest),system-ui,-apple-system,"Segoe UI",Roboto,san
   </div>
   <div id="addHold" hidden><div class="addgrid" id="addForm">
       <div class="nmrow"><input id="ico" maxlength="4" placeholder="🙂" autocomplete="off" aria-label="Эмодзи привычки"><input id="inp" maxlength="60" placeholder="Название, например «Читать 20 минут»" aria-label="Название привычки"></div>
+      <button class="mini" id="tplOpen" type="button">✨ Выбрать из шаблонов</button>
+      <details class="more" id="addMore"><summary>Дополнительно: цель, частота, «бросить»</summary>
       <div class="r2">
         <input id="goal" type="number" min="1" inputmode="numeric" placeholder="Цель (число)" aria-label="Числовая цель, необязательно">
         <input id="unit" maxlength="12" placeholder="Единица, например мл" aria-label="Единица измерения">
@@ -344,7 +358,7 @@ body{font-family:var(--font,Onest),system-ui,-apple-system,"Segoe UI",Roboto,san
       <select id="wk" aria-label="Как часто"><option value="7">Каждый день</option><option value="6">6 раз в неделю</option><option value="5">5 раз в неделю</option><option value="4">4 раза в неделю</option><option value="3">3 раза в неделю</option><option value="2">2 раза в неделю</option><option value="1">1 раз в неделю</option><option value="e2">Каждые 2 дня</option><option value="e3">Каждые 3 дня</option><option value="e4">Каждые 4 дня</option></select>
       <label class="chk"><input type="checkbox" id="quit"> Привычка «бросить»: считаю дни без срыва</label>
       <input id="qd" type="number" min="1" max="3650" inputmode="numeric" placeholder="Уже держусь, дней (необязательно)" hidden>
-      <button class="mini" id="tplOpen" type="button">✨ Выбрать из шаблонов</button>
+      </details>
       <button class="pri" id="addBtn">Добавить привычку</button>
     </div></div>
   <div id="list"></div>
@@ -374,7 +388,7 @@ function migrate(){
 }
 if(FRESH)S={habits:[],done:{},seeded:true,v:4};
 migrate();
-function save(t){if(t!==false)S.ts=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}pushSync();}
+function save(t){if(DEMO)return;if(t!==false)S.ts=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}pushSync();}
 var $=function(id){return document.getElementById(id)};
 var pad=function(n){return String(n).padStart(2,'0')};
 var key=function(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())};
@@ -562,7 +576,7 @@ function render(){
     for(var j=1;j<=n;j++)days.push(new Date(first.getFullYear(),first.getMonth(),j));
     label=MONN[first.getMonth()]+' '+first.getFullYear();
   }
-  $('bar').hidden=view==='t'||view==='s';$('seg').hidden=!(view==='w'||view==='m');[].forEach.call($('seg').children,function(b){b.classList.toggle('on',b.dataset.v===view);});$('range').textContent=label;
+  $('bar').hidden=view==='t'||view==='s';$('seg').hidden=!(view==='w'||view==='m');$('demob').hidden=!DEMO;[].forEach.call($('seg').children,function(b){b.classList.toggle('on',b.dataset.v===view);});$('range').textContent=label;
   var tv=view==='m'?'w':view;['t','w','s'].forEach(function(v){var b=$('v'+v);b.classList.toggle('on',tv===v);b.setAttribute('aria-pressed',tv===v);});$('tabbar').dataset.v=tv;
   var act=S.habits.filter(function(h){return !h.arch}),arc=S.habits.filter(function(h){return h.arch});
   var tAct=act.filter(function(h){return md(h)==='w'||sched(h,today)}),rest=act.filter(function(h){return tAct.indexOf(h)<0});
@@ -573,8 +587,9 @@ function render(){
   if(pendingChoice)html+='<section class="habit" style="--i:0"><div class="name">Данные на этом устройстве</div><p class="meta" style="margin:6px 0 10px">'+esc(CHOICE_MSG)+'</p><div class="btns"><button class="pri" data-act="pc-merge">Объединить с аккаунтом</button><button data-act="pc-take">Использовать данные аккаунта</button></div></section>';
   if(view==='t'&&allDone)html+='<div class="banner" role="status" style="--i:'+(ci++)+'">✓ Все привычки на сегодня выполнены. Отличный день!</div>';
   if(view==='t'&&wd(today)===6&&act.length)html+='<div class="hint" style="--i:'+(ci++)+'"><span>Воскресенье: самое время подвести итоги недели.</span><button class="mini" data-act="goS">Открыть</button></div>';
-  if(view==='t'&&RET>=3&&S.rd!==tk&&act.length)html+='<div class="hint"><span>С возвращением! Начните с одной простой привычки сегодня, остальные подтянутся.</span><button class="mini" data-act="rd">Ок</button></div>';
-  if(view==='t'&&!CU&&act.length&&Object.keys(S.done).length&&Date.now()-(S.lb||(S.lb=Date.now()))>12096e5)html+='<div class="hint"><span>Данные хранятся только на этом устройстве. Сохраните копию или войдите в аккаунт.</span><button class="mini" data-act="bk">Сохранить</button><button class="mini" data-act="bkl">Позже</button></div>';
+  var tp=tipHtml(act);if(tp)html+=tp;
+  if(view==='t'&&!DEMO&&RET>=3&&S.rd!==tk&&act.length)html+='<div class="hint"><span>С возвращением! Начните с одной простой привычки сегодня, остальные подтянутся.</span><button class="mini" data-act="rd">Ок</button></div>';
+  if(view==='t'&&!DEMO&&!CU&&act.length&&Object.keys(S.done).length&&Date.now()-(S.lb||(S.lb=Date.now()))>12096e5)html+='<div class="hint"><span>Данные хранятся только на этом устройстве. Сохраните копию или войдите в аккаунт.</span><button class="mini" data-act="bk">Сохранить</button><button class="mini" data-act="bkl">Позже</button></div>';
   if(view==='t'&&inPause(tk))html+='<div class="hint"><span>⏸ Пауза до '+S.pause.b.split('-').reverse().join('.')+': серии не прервутся.</span><button class="mini" data-act="unpause">Снять</button></div>';
   if(view==='t'&&S.wgoal&&act.length)html+='<div class="hint"><span>🎯 Цель недели: '+esc(S.wgoal)+'</span></div>';
   if(view==='m'&&act.length)html+='<div class="week dow">'+DAYS.map(function(x){return '<small>'+x+'</small>'}).join('')+'</div>';
@@ -759,6 +774,7 @@ $('list').addEventListener('click',function(e){
   else if(a==='rl'){var r0=(h.rel=h.rel||[]),ix0=r0.indexOf(tk);if(ix0>=0)r0.splice(ix0,1);else r0.push(tk);if(!r0.length)delete h.rel;touch('h:'+id);save();}
   else if(a==='bk'){exportJson();}
   else if(a==='bkl'){S.lb=Date.now();save();}
+  else if(a==='tipx'){S['t'+b.dataset.k]=1;save();}
   else if(a==='hp'){habId=id;openSheet('hab');}
   else if(a==='rd'){S.rd=tk;save();}
   else if(a==='sb'){var i0=+b.dataset.i,r0s=(S.done[id]||{})[tk],m0=typeof r0s==='number'?r0s:(r0s===true?(1<<h.subs.length)-1:0),w0=isDone(h,tk);m0^=(1<<i0);setVal(id,tk,m0);save();if(!w0&&isDone(h,tk)){popKey=id+'|'+tk;buzz();ach(h);}markUndo(id,tk,r0s,'Подзадача: '+h.name);}
@@ -774,7 +790,7 @@ $('list').addEventListener('click',function(e){
     var sk=S.skips[id]||(S.skips[id]={});
     if(sk[tk]){delete sk[tk];touch('s:'+id+':'+tk);save();}
     else if(isDone(h,tk))toast('Сегодня уже выполнено, пропуск не нужен');
-    else if(skipCount(h)>=2)toast('Лимит: 2 пропуска в месяц для одной привычки');
+    else if(skipCount(h)>=2)toast('Пропуски на этот месяц закончились (2 из 2). Серию сохранит выполнение сегодня.');
     else{sk[tk]=true;touch('s:'+id+':'+tk);save();toast('Пропуск записан: серия не прервётся');}
     menu=null;
   }
@@ -809,7 +825,7 @@ function add(){
   var v=$('inp').value.trim();if(!v)return;
   var h={id:'h'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),name:v,color:pickColor(),created:key(today)},n=parseInt($('goal').value,10),w=parseInt($('wk').value,10),un=$('unit').value.trim();
   if(n>0){h.goal=n;if(un)h.unit=un;}if(w<7)h.wk=w;var ic0=$('ico').value.trim();if(ic0)h.icon=Array.from(ic0).slice(0,2).join('');var wv0=$('wk').value;if(wv0.charAt(0)==='e'){h.ev=+wv0.slice(1);delete h.wk;}if($('quit').checked){h.quit=true;delete h.goal;delete h.unit;delete h.wk;delete h.ev;var qd=parseInt($('qd').value,10);if(qd>0){var sd=new Date(today);sd.setDate(sd.getDate()-Math.min(qd,3650));h.created=key(sd);}$('quit').checked=false;$('qd').value='';$('qd').hidden=true;}
-  S.habits.push(h);touch('h:'+h.id);touch('list');$('inp').value='';$('ico').value='';$('goal').value='';$('unit').value='';$('wk').value='7';save();render();toast('Привычка добавлена');closeSheet();
+  S.habits.push(h);touch('h:'+h.id);touch('list');$('inp').value='';$('ico').value='';$('goal').value='';$('unit').value='';$('wk').value='7';save();render();toast('Привычка добавлена');closeSheet();$('addMore').open=false;
 }
 $('addBtn').addEventListener('click',add);
 $('vplus').addEventListener('click',function(){openSheet('add');});$('vmore').addEventListener('click',function(){openSheet('more');});
@@ -858,7 +874,7 @@ var CL=null,CU=null,unsub=null,pushT=null,OKMSG='Синхронизирован�
 var syncT='';function setSync(t){syncT=t;var e=$('sync');if(e)e.textContent=t;}
 function touch(p){S.meta=S.meta||{};S.meta[p]=Date.now();}
 var pendingChoice=null,pendingUndo=null,pendingNote=null,CHOICE_MSG='На этом устройстве есть данные, которых нет в этом аккаунте. Выберите, что с ними сделать.';
-function persist(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+function persist(){if(DEMO)return;try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 function stableStr(o){
   if(Array.isArray(o))return '['+o.map(stableStr).join(',')+']';
   if(o&&typeof o==='object')return '{'+Object.keys(o).sort().filter(function(k){return o[k]!==undefined}).map(function(k){return JSON.stringify(k)+':'+stableStr(o[k]);}).join(',')+'}';
@@ -903,12 +919,12 @@ function mergeDocs(L,R,mode){
   L.habits=habits;L.done=done;L.skips=skips;L.notes=notes;L.meta=nm;
 }
 function doPush(){
-  if(deleting||!CL||!CU||S.owner!==CU.uid)return;
+  if(DEMO||deleting||!CL||!CU||S.owner!==CU.uid)return;
   var uid=CU.uid;
   CL.save(uid,{json:JSON.stringify(S),ts:Date.now()}).then(function(){setSync(OKMSG);},function(){setSync('Не удалось синхронизировать. Данные сохранены на этом устройстве и отправятся при следующем изменении.');});
 }
 function pushSync(){
-  if(deleting||!CL||!CU||S.owner!==CU.uid)return;
+  if(DEMO||deleting||!CL||!CU||S.owner!==CU.uid)return;
   clearTimeout(pushT);
   pushT=setTimeout(function(){pushT=null;doPush();},700);
 }
@@ -924,7 +940,7 @@ function adoptLook(R){
   return true;
 }
 function onRemote(d){
-  if(!CU||deleting)return;
+  if(!CU||deleting)return;if(DEMO){pendRem={d:d};return;}
   var R=null;if(d&&typeof d.json==='string'){try{R=JSON.parse(d.json);}catch(e){}}
   if(R&&R.name&&!S.name){S.name=R.name;persist();applyHead();}
   adoptLook(R);
@@ -1019,7 +1035,7 @@ function profHtml(){
   var pal=ACC.map(function(a,i){var on=(S.accent|0)===i;return '<button class="swb'+(on?' on':'')+'" style="--sc:'+a[0]+'" data-s="acc" data-i="'+i+'" aria-label="Цвет акцента '+(i+1)+'" aria-pressed="'+on+'">'+(on?'✓':'')+'</button>';}).join('');
   return '<h3>Имя</h3><input id="nm" maxlength="24" placeholder="Как к вам обращаться?" autocomplete="given-name" value="'+esc(S.name||'')+'"><h3>Аккаунт</h3>'+acc+'<h3>Оформление</h3><div class="btns"><button class="nav" id="th" data-s="theme">'+(window.themeLbl||'Тема')+'</button></div><div class="sw" style="margin-top:10px" role="group" aria-label="Акцентный цвет">'+pal+'</div>'+look()+'<h3>Пауза</h3><p class="meta">Отпуск или болезнь: выбранные дни не ломают серии.</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input id="pa" type="date" value="'+(S.pause?S.pause.a:key(today))+'"><input id="pb" type="date" value="'+(S.pause?S.pause.b:'')+'"></div><div class="btns"><button data-s="pause">Включить паузу</button>'+(S.pause?'<button class="mini" data-s="unp">Снять паузу</button>':'')+'</div><h3>Данные</h3><div class="btns"><button data-s="csv">Таблица CSV</button><button data-s="jsonx">Резервная копия</button><button data-s="jsoni">Восстановить</button></div><h3>О сервисе</h3><div class="btns"><a class="nav" href="privacy.html">Конфиденциальность</a>'+(CU?'<button class="dng" data-s="deltab">Удалить аккаунт</button>':'<button class="mini" data-s="wipe">Стереть данные на устройстве</button>')+'</div><p class="meta" style="margin-top:12px">По вопросам: shrewddly@gmail.com</p>'+(iosHint()?'<h3>Приложение</h3><p class="meta">'+iosHint()+'</p>':'')+(deferredInstall?'<h3>Приложение</h3><div class="btns"><button class="pri" data-s="install">Установить на устройство</button></div>':'');
 }
-function openSheet(m){if($('addForm').parentNode===$('sbody'))$('addHold').appendChild($('addForm'));sheetMode=m||'prof';welStep=0;tsel=[];$('stt').textContent={add:'Новая привычка',more:'Меню',prof:'Профиль',tpl:'Шаблоны привычек',wel:'Привычки',del:'Удаление аккаунта',rev:'Недельный обзор',hab:'Статистика'}[sheetMode];$('sbody').innerHTML=sheetHtml();[].forEach.call($('sbody').querySelectorAll('.hm'),function(e){e.scrollLeft=e.scrollWidth;});if(sheetMode==='add'){$('sbody').appendChild($('addForm'));setTimeout(function(){$('inp').focus();},420);}$('scrim').hidden=false;$('sheet').hidden=false;requestAnimationFrame(function(){requestAnimationFrame(function(){$('scrim').classList.add('on');$('sheet').classList.add('on');$('shut').focus();});});}
+function openSheet(m){if($('addForm').parentNode===$('sbody'))$('addHold').appendChild($('addForm'));sheetMode=m||'prof';welStep=0;tsel=[];tplAll=false;$('stt').textContent={help:'Как это работает',add:'Новая привычка',more:'Меню',prof:'Профиль',tpl:'Шаблоны привычек',wel:'Привычки',del:'Удаление аккаунта',rev:'Недельный обзор',hab:'Статистика'}[sheetMode];$('sbody').innerHTML=sheetHtml();[].forEach.call($('sbody').querySelectorAll('.hm'),function(e){e.scrollLeft=e.scrollWidth;});if(sheetMode==='add'){$('sbody').appendChild($('addForm'));setTimeout(function(){$('inp').focus();},420);}$('scrim').hidden=false;$('sheet').hidden=false;requestAnimationFrame(function(){requestAnimationFrame(function(){$('scrim').classList.add('on');$('sheet').classList.add('on');$('shut').focus();});});}
 function closeSheet(){if(sheetMode==='wel'&&!S.onb){S.onb=1;save();}$('scrim').classList.remove('on');$('sheet').classList.remove('on');setTimeout(function(){if(!$('sheet').classList.contains('on')){$('scrim').hidden=true;$('sheet').hidden=true;$('addHold').appendChild($('addForm'));}},420);$('prof').focus();}
 $('prof').addEventListener('click',function(){openSheet('prof');});$('tplOpen').addEventListener('click',function(){openSheet('tpl');});$('shut').addEventListener('click',closeSheet);$('scrim').addEventListener('click',closeSheet);
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!$('sheet').hidden)closeSheet();});
@@ -1031,7 +1047,8 @@ $('sbody').addEventListener('click',function(e){
   if(a==='unp'){delete S.pause;save();render();closeSheet();return;}
   if(a==='mv'){
     var k=b.dataset.k;
-    if(k==='prof'||k==='tpl'||k==='rev'){openSheet(k);return;}
+    if(k==='prof'||k==='tpl'||k==='rev'||k==='help'){openSheet(k);return;}
+    if(k==='demo'){enterDemo();return;}
     if(k==='wel'){openSheet('wel');return;}
     if(k==='priv'){location.href='privacy.html';return;}
     closeSheet();sel=null;editing=null;menu=null;animNext='f';
@@ -1051,6 +1068,8 @@ $('sbody').addEventListener('click',function(e){
     CL.del(g?null:pw).then(function(){wipeLocal();setTimeout(function(){deleting=false;},3000);},function(er){deleting=false;b.disabled=false;$('dmsg').textContent=AE[er&&er.code]||'Не удалось удалить: '+((er&&er.code)||'ошибка');});
     return;
   }
+  if(a==='tpall'){tplAll=true;$('sbody').innerHTML=sheetHtml();return;}
+  if(a==='demo'){enterDemo();return;}
   if(a==='tp'){var t=+b.dataset.t,ix=tsel.indexOf(t);if(ix>=0)tsel.splice(ix,1);else tsel.push(t);b.classList.toggle('on',ix<0);var ab=$('tpadd');ab.textContent=tpLbl();ab.disabled=!tsel.length;return;}
   if(a==='tpadd'){var n=tsel.length;tsel.forEach(function(i){addTplItem(ALL[i]);});tsel=[];S.onb=1;touch('list');save();closeSheet();render();toast('Добавлено привычек: '+n);return;}
   if(a==='wnext'){welStep++;$('sbody').innerHTML=sheetHtml();return;}
@@ -1105,22 +1124,65 @@ function delHtml(){return '<p class="meta" style="margin-top:12px">Будут б
 function wipeLocal(){try{localStorage.removeItem(KEY);}catch(e){}var th=S.theme,ac=S.accent;S=blankState();S.theme=th;if(ac)S.accent=ac;S.onb=1;persist();closeSheet();sel=null;editing=null;menu=null;view='t';animNext='f';applyHead();render();toast('Данные удалены');}
 function tpLbl(){return tsel.length?'Добавить выбранные ('+tsel.length+')':'Выберите привычки';}
 function addTplItem(t){var h={id:'h'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),name:t[1],icon:t[0],color:pickColor(),created:key(today)};if(t[2]>0){h.goal=t[2];h.unit=t[3];if(t[4])h.quick=t[4];}if(t[5]&&t[5]<7)h.wk=t[5];if(t[6]){h.quit=true;delete h.goal;delete h.unit;delete h.quick;delete h.wk;}if(t[7])h.ch=t[7];S.habits.push(h);touch('h:'+h.id);}
+var tplAll=false,POP=['Пить воду','Зарядка','Читать','Прогулка','Лечь до 23:00','Медитация'];
 function tplHtml(){
-  var have=S.habits.map(function(h){return h.name;}),i=0,o='<input id="tsrch" type="search" placeholder="Поиск среди шаблонов" aria-label="Поиск" style="margin-top:10px">';
-  CAT.forEach(function(c){o+='<div class="tgrp"><h3>'+c[0]+'</h3><div class="chips">';c[1].forEach(function(t){var d=have.indexOf(t[1])>=0,on=tsel.indexOf(i)>=0;o+='<button class="tp'+(on?' on':'')+'" data-s="tp" data-t="'+i+'"'+(d?' disabled':'')+'>'+t[0]+' '+esc(t[1])+(d?' ✓':'')+'</button>';i++;});o+='</div></div>';});
-  return o+'<div class="tpbar"><button class="pri" id="tpadd" data-s="tpadd"'+(tsel.length?'':' disabled')+'>'+tpLbl()+'</button></div>';
+  var have=S.habits.map(function(h){return h.name;}),o='',bar='<div class="tpbar"><button class="pri" id="tpadd" data-s="tpadd"'+(tsel.length?'':' disabled')+'>'+tpLbl()+'</button></div>';
+  function chip(t,i){var d=have.indexOf(t[1])>=0,on=tsel.indexOf(i)>=0;return '<button class="tp'+(on?' on':'')+'" data-s="tp" data-t="'+i+'"'+(d?' disabled':'')+'>'+t[0]+' '+esc(t[1])+(d?' ✓':'')+'</button>';}
+  if(!tplAll){
+    o='<p class="meta" style="margin-top:10px">Выберите одну-две: этого достаточно. Остальное добавите потом.</p><div class="chips">'+POP.map(function(n){var i=ALL.findIndex(function(t){return t[1]===n;});return i<0?'':chip(ALL[i],i);}).join('')+'</div><div class="btns" style="margin-top:6px"><button class="mini" data-s="tpall">Все шаблоны ('+ALL.length+')</button></div>';
+    return o+bar;
+  }
+  var i=0;o='<input id="tsrch" type="search" placeholder="Поиск среди шаблонов" aria-label="Поиск" style="margin-top:10px">';
+  CAT.forEach(function(c){o+='<div class="tgrp"><h3>'+c[0]+'</h3><div class="chips">';c[1].forEach(function(t){o+=chip(t,i);i++;});o+='</div></div>';});
+  return o+bar;
 }
 function welHtml(){
-  if(welStep===0)return '<div class="wl"><div class="wlogo">'+LOGO+'</div><h2>След</h2><p class="wt">Трекер привычек, который остаётся с вами даже без интернета</p><div class="wf"><div><b>🌱</b><span>Отмечайте привычки одним касанием</span></div><div><b>🔥</b><span>Серии, награды и честная статистика</span></div><div><b>🔒</b><span>Бесплатно, без рекламы, данные только ваши</span></div></div><div class="btns" style="justify-content:center"><button class="pri" data-s="wnext">Начать</button>'+(CL?'<button data-s="login">У меня есть аккаунт</button>':'')+'</div><p class="meta" style="margin-top:12px">Смахните карточку вправо, чтобы отметить привычку, влево, чтобы пропустить. Данные хранятся на вашем устройстве. <a href="privacy.html">Конфиденциальность</a></p>'+(iosHint()?'<p class="meta">'+iosHint()+'</p>':'')+'</div>';
+  if(welStep===0)return '<div class="wl"><div class="wlogo">'+LOGO+'</div><h2>След</h2><p class="wt">Трекер привычек, который остаётся с вами даже без интернета</p><div class="wf"><div><b>🌱</b><span>Отмечайте привычки одним касанием</span></div><div><b>🔥</b><span>Серии, награды и честная статистика</span></div><div><b>🔒</b><span>Бесплатно, без рекламы, данные только ваши</span></div></div><div class="btns" style="justify-content:center"><button class="pri" data-s="wnext">Начать</button><button data-s="demo">Посмотреть пример</button>'+(CL?'<button data-s="login">У меня есть аккаунт</button>':'')+'</div><p class="meta" style="margin-top:12px">Смахните карточку вправо, чтобы отметить привычку, влево, чтобы пропустить. Данные хранятся на вашем устройстве. <a href="privacy.html">Конфиденциальность</a></p>'+(iosHint()?'<p class="meta">'+iosHint()+'</p>':'')+'</div>';
   if(welStep===1)return '<h2 style="margin:14px 0 4px;font-size:1.5rem">Как вас зовут?</h2><p class="meta">Имя увидите только вы. Это можно пропустить.</p><input id="nm" maxlength="24" placeholder="Например, Анна" autocomplete="given-name" value="'+esc(S.name||'')+'"><div class="btns" style="margin-top:14px"><button class="pri" data-s="wnext">Дальше</button></div>';
-  return '<h2 style="margin:14px 0 2px;font-size:1.4rem">С чего начнём?</h2><p class="meta">Выберите несколько привычек. Потом всё можно изменить.</p>'+tplHtml()+'<div class="btns" style="justify-content:center"><button class="mini" data-s="wskip">Начну с нуля</button></div>';
+  return '<h2 style="margin:14px 0 2px;font-size:1.4rem">С чего начнём?</h2><p class="meta">Это займёт полминуты. Потом всё можно изменить.</p>'+tplHtml()+'<div class="btns" style="justify-content:center"><button class="mini" data-s="wskip">Начну с нуля</button></div>';
 }
-function sheetHtml(){return sheetMode==='add'?'':sheetMode==='more'?moreHtml():sheetMode==='hab'?habHtml():sheetMode==='rev'?revHtml():sheetMode==='del'?delHtml():sheetMode==='tpl'?tplHtml():sheetMode==='wel'?welHtml():profHtml();}
+function sheetHtml(){return sheetMode==='help'?helpHtml():sheetMode==='add'?'':sheetMode==='more'?moreHtml():sheetMode==='hab'?habHtml():sheetMode==='rev'?revHtml():sheetMode==='del'?delHtml():sheetMode==='tpl'?tplHtml():sheetMode==='wel'?welHtml():profHtml();}
 function applyHead(){var n=S.name,h=new Date().getHours(),g=h<5?'Доброй ночи':h<12?'Доброе утро':h<18?'Добрый день':'Добрый вечер';$('h1').textContent=n?g+', '+n:'Привычки';$('prof').textContent=(n||(CU&&CU.email)||'☺').charAt(0).toUpperCase();}
 $('sbody').addEventListener('input',function(e){if(e.target.id==='wg'){S.wgoal=e.target.value.slice(0,80);if(!S.wgoal)delete S.wgoal;save();return;}
   if(e.target.id==='tsrch'){var q=e.target.value.toLowerCase().trim();[].forEach.call($('sbody').querySelectorAll('.tgrp'),function(g){var any=false;[].forEach.call(g.querySelectorAll('.tp'),function(t){var m=!q||t.textContent.toLowerCase().indexOf(q)>=0;t.hidden=!m;if(m)any=true;});g.hidden=!any;});return;}
   if(e.target.id!=='nm')return;var v=e.target.value.trim().slice(0,24);if(v)S.name=v;else delete S.name;save();applyHead();});
-var habId=null,RET=0;
+var habId=null,RET=0,DEMO=false,REAL=null,pendRem=null;
+function doneTotal(){var n=0;S.habits.forEach(function(h){n+=Object.keys(S.done[h.id]||{}).length;});return n;}
+function tipHtml(act){
+  if(view!=='t'||DEMO||!act.length)return '';
+  var n=doneTotal(),bs=0,t=null;act.forEach(function(x){bs=Math.max(bs,streak(x));});
+  if(n===0&&!S.t1)t=['1','👆 Нажмите большую круглую кнопку на карточке, когда сделаете привычку. Это вся механика.','Понятно'];
+  else if(n>=1&&n<=3&&!S.t2)t=['2','🎉 Первая отметка! Заходите завтра и нажмите снова: так растёт серия.','Ок'];
+  else if(n>=4&&!S.t3)t=['3','💡 Смахните карточку вправо, чтобы быстро отметить, и влево, чтобы пропустить день. Удержите карточку, чтобы переставить.','Ок'];
+  else if(bs>=2&&!S.t4)t=['4','🔥 Серия — сколько дней подряд вы выполняете привычку. Пропуск её не ломает.','Ок'];
+  if(!t)return '';
+  return '<div class="hint tip"><span>'+t[1]+'</span><button class="mini" data-act="tipx" data-k="'+t[0]+'">'+t[2]+'</button></div>';
+}
+var HELP=[['Серия','Сколько дней подряд вы выполняете привычку. Для привычек «N раз в неделю» серия считается неделями.'],['Пропуск','Если день не получился (болезнь, поездка), смахните карточку влево или отметьте день пропуском. Серия не прервётся. На каждую привычку доступно 2 пропуска в месяц.'],['Пауза','Для отпуска или болезни: «Ещё» → «Профиль» → «Пауза». Выбранные дни не ломают серии.'],['Минимум','У привычки с числовой целью можно задать минимум (в «Изменить»). Если вы выполнили хотя бы его, день засчитывается и серия сохраняется.'],['Привычка «бросить»','Для отказа от чего-то (не курить). Приложение считает дни без срыва. Срыв обнуляет счётчик, но рекорд остаётся.'],['Подзадачи','Привычка из нескольких пунктов, например «Утро». День засчитывается, когда отмечены все.'],['Челлендж','Цель на определённое число дней. Когда вы её достигнете, на карточке появится 🏆.'],['Жесты','Смахните карточку вправо, чтобы отметить, влево, чтобы пропустить. Удержите карточку или ручку ⠿, чтобы переставить. Кнопка «⋯» на карточке открывает изменение, форму и архив.']];
+function helpHtml(){return '<p class="meta" style="margin-top:10px">Коротко о главных понятиях.</p>'+HELP.map(function(x,i){return '<details class="hlp"'+(i===0?' open':'')+'><summary>'+x[0]+'</summary><p>'+x[1]+'</p></details>';}).join('');}
+function demoState(){
+  var d=blankState(),seed=7,cr,i;function rnd(){seed=(seed*9301+49297)%233280;return seed/233280;}
+  function dk(n){var x=new Date(today);x.setDate(x.getDate()+n);return key(x);}
+  d.theme=S.theme;d.skin=S.skin;d.accent=S.accent;d.font=S.font;d.onb=1;d.v=S.v;cr=dk(-28);
+  var H=[{id:'dm1',name:'Пить воду',icon:'💧',color:0,goal:2000,unit:'мл',quick:[250,500],p:.85},{id:'dm2',name:'Читать',icon:'📚',color:1,p:.78},{id:'dm3',name:'Зарядка',icon:'🤸',color:2,p:.62},{id:'dm4',name:'Медитация',icon:'🧘',color:3,goal:10,unit:'мин',quick:[5,10],p:.7},{id:'dm5',name:'Не курить',icon:'🚭',color:4,quit:true,rel:[dk(-12)]}];
+  H.forEach(function(h){h.created=cr;var p=h.p;delete h.p;d.habits.push(h);if(h.quit)return;d.done[h.id]={};
+    for(i=28;i>=0;i--){var k=dk(-i);if(i===0){if(h.id==='dm1')d.done[h.id][k]=1000;if(h.id==='dm2')d.done[h.id][k]=true;continue;}
+      if(rnd()<p)d.done[h.id][k]=h.goal?Math.round(h.goal*(.6+rnd()*.7)):true;}});
+  d.skips.dm3={};d.skips.dm3[dk(-9)]=true;
+  return d;
+}
+function enterDemo(){
+  if(DEMO)return;closeSheet();REAL=S;DEMO=true;S=demoState();view='t';sel=null;editing=null;menu=null;animNext='f';
+  applyTheme();render();window.scrollTo(0,0);toast('Пример: можно нажимать и пробовать, ничего не сохранится');
+}
+function exitDemo(){
+  if(!DEMO)return;DEMO=false;S=REAL;REAL=null;view='t';sel=null;editing=null;menu=null;animNext='f';
+  applyTheme();render();window.scrollTo(0,0);
+  if(pendRem){var pr=pendRem;pendRem=null;onRemote(pr.d);}
+  if(!S.habits.length){openSheet('wel');welStep=2;$('sbody').innerHTML=sheetHtml();}
+}
+$('demoExit').addEventListener('click',exitDemo);
+$('hq').addEventListener('click',function(){openSheet('help');});
 var LOGO='<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lgg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#14A39A"/><stop offset="1" stop-color="#0B5E5A"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(#lgg)"/><circle cx="13" cy="50" r="2.6" fill="#fff" opacity=".35"/><circle cx="20" cy="45" r="3.3" fill="#fff" opacity=".55"/><path d="M22 33l9 9 17-20" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 var DAYP=['понедельникам','вторникам','средам','четвергам','пятницам','субботам','воскресеньям'];
 function chp(h){return h.quit?streak(h):doneKeys(h).length;}
@@ -1145,7 +1207,7 @@ function insHtml(act){
   return 'Лучше всего получается по '+DAYP[hi]+' ('+Math.round(r[hi]*100)+'%), сложнее по '+DAYP[lo]+' ('+Math.round(r[lo]*100)+'%). Поставьте самую важную привычку на сильный день, а на сложный выберите минимум.';
 }
 function moreHtml(){
-  var it=[['👤','Профиль и настройки','prof'],['✨','Шаблоны привычек','tpl'],['🗓️','Недельный обзор','rev'],['📆','Месяц','month'],['🗄️','Архив','arc'],['👋','Показать приветствие','wel'],['🔒','Конфиденциальность','priv']];
+  var it=[['👤','Профиль и настройки','prof'],['✨','Шаблоны привычек','tpl'],['🗓️','Недельный обзор','rev'],['📆','Месяц','month'],['🗄️','Архив','arc'],['👋','Показать приветствие','wel'],['❓','Как это работает','help'],['👀','Посмотреть пример','demo'],['🔒','Конфиденциальность','priv']];
   return '<div class="menu">'+it.map(function(x){return '<button class="mrow2" data-s="mv" data-k="'+x[2]+'"><span class="mi">'+x[0]+'</span><span class="ml">'+x[1]+'</span><span class="mc">›</span></button>';}).join('')+'</div>';
 }
 function lastAge(){var mx='';S.habits.forEach(function(h){Object.keys(S.done[h.id]||{}).forEach(function(k){if(k>mx)mx=k;});});if(!mx)return 0;var p=mx.split('-');return Math.floor((today-new Date(+p[0],+p[1]-1,+p[2]))/864e5);}
@@ -1301,7 +1363,7 @@ var sw=null;
 function swipeDo(id,dir){
   var h=S.habits.filter(function(x){return x.id===id})[0],tk=key(today);if(!h)return;
   if(dir>0){if(isDone(h,tk)){toast('Уже выполнено');return;}var pv=(S.done[id]||{})[tk];setVal(id,tk,h.subs?(1<<h.subs.length)-1:(h.goal?h.goal:true));popKey=id+'|'+tk;buzz();save();ach(h);render();markUndo(id,tk,pv,'Отмечено: '+h.name);}
-  else{var sk=S.skips[id]||(S.skips[id]={});if(md(h)==='w')toast('Для недельных целей пропуск не нужен');else if(sk[tk])toast('Пропуск уже записан');else if(isDone(h,tk))toast('Сегодня уже выполнено');else if(skipCount(h)>=2)toast('Лимит: 2 пропуска в месяц');else{sk[tk]=true;touch('s:'+id+':'+tk);save();render();toast('Пропуск записан: серия не прервётся');}}
+  else{var sk=S.skips[id]||(S.skips[id]={});if(md(h)==='w')toast('Для недельных целей пропуск не нужен');else if(sk[tk])toast('Пропуск уже записан');else if(isDone(h,tk))toast('Сегодня уже выполнено');else if(skipCount(h)>=2)toast('Пропуски на этот месяц закончились (2 из 2)');else{sk[tk]=true;touch('s:'+id+':'+tk);save();render();toast('Пропуск записан: серия не прервётся');}}
 }
 var L0=$('list');
 L0.addEventListener('touchstart',function(e){var c=e.target.closest('.habit'),m=c&&c.querySelector('[data-act="m"]');if(view!=='t'||!m||e.touches.length!==1||e.target.closest('input,textarea,select,.drg')){sw=null;return;}sw={c:c,id:m.dataset.id,x:e.touches[0].clientX,y:e.touches[0].clientY,dx:0,lock:false};},{passive:true});
