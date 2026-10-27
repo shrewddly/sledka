@@ -407,7 +407,9 @@ function migrate(){
 }
 if(FRESH)S={habits:[],done:{},seeded:true,v:4};
 migrate();
-function save(t){if(DEMO)return;if(t!==false)S.ts=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}pushSync();}
+var storeWarned=false;
+function storeOk(){try{localStorage.setItem(KEY,JSON.stringify(S));return true;}catch(e){if(!storeWarned){storeWarned=true;toast('Не удалось сохранить на устройстве. Сделайте резервную копию в профиле.');}return false;}}
+function save(t){if(DEMO)return;if(t!==false)S.ts=Date.now();storeOk();pushSync();}
 var $=function(id){return document.getElementById(id)};
 var pad=function(n){return String(n).padStart(2,'0')};
 var key=function(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())};
@@ -893,7 +895,7 @@ var CL=null,CU=null,unsub=null,pushT=null,OKMSG='Синхронизирован�
 var syncT='';function setSync(t){syncT=t;var e=$('sync');if(e)e.textContent=t;}
 function touch(p){S.meta=S.meta||{};S.meta[p]=Date.now();}
 var pendingChoice=null,pendingUndo=null,pendingNote=null,CHOICE_MSG='На этом устройстве есть данные, которых нет в этом аккаунте. Выберите, что с ними сделать.';
-function persist(){if(DEMO)return;try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+function persist(){if(DEMO)return;storeOk();}
 function stableStr(o){
   if(Array.isArray(o))return '['+o.map(stableStr).join(',')+']';
   if(o&&typeof o==='object')return '{'+Object.keys(o).sort().filter(function(k){return o[k]!==undefined}).map(function(k){return JSON.stringify(k)+':'+stableStr(o[k]);}).join(',')+'}';
