@@ -319,9 +319,28 @@ body{font-family:var(--font,Onest),system-ui,-apple-system,"Segoe UI",Roboto,san
 .hlp>summary::after{content:"›";margin-left:auto;font-size:1.3rem;color:var(--muted);transition:transform .3s var(--ease)}.hlp[open]>summary::after{transform:rotate(90deg)}
 .hlp p{margin:0 0 12px;color:var(--muted);line-height:1.5}
 @supports not (background:color-mix(in srgb,red,blue)){.demob{background:var(--surface)}}
+
+#splash{position:fixed;inset:0;z-index:300;display:grid;place-items:center;background:radial-gradient(120% 90% at 50% 0%,#17A89E 0%,#0B7A75 45%,#0B4F4C 100%);transition:opacity .6s var(--ease,ease),visibility .6s;}
+#splash.out{opacity:0;visibility:hidden;pointer-events:none}
+.sp-in{text-align:center;color:#fff;padding:24px}
+.sp-logo{width:108px;height:108px;filter:drop-shadow(0 18px 32px rgba(0,0,0,.28))}
+.sp-name{margin-top:20px;font-size:2.3rem;font-weight:800;letter-spacing:.05em}
+.sp-tag{margin-top:6px;font-size:.95rem;color:rgba(255,255,255,.85);letter-spacing:.02em}
+@media (prefers-reduced-motion:no-preference){
+.sp-logo{animation:spIn .7s var(--ease,ease) both}
+@keyframes spIn{from{transform:scale(.7) rotate(-6deg);opacity:0}to{transform:none;opacity:1}}
+.sp-ck{stroke-dasharray:1;stroke-dashoffset:1;animation:spCk .6s .45s var(--ease,ease) forwards}
+@keyframes spCk{to{stroke-dashoffset:0}}
+.sp-name,.sp-tag{opacity:0;animation:spUp .5s var(--ease,ease) forwards}
+.sp-name{animation-delay:.6s}.sp-tag{animation-delay:.75s}
+@keyframes spUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+}
 </style>
 </head>
 <body>
+<div id="splash" aria-hidden="true"><div class="sp-in"><svg class="sp-logo" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="spg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".28"/><stop offset="1" stop-color="#FFFFFF" stop-opacity=".12"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(#spg)"/><circle cx="13" cy="50" r="2.6" fill="#fff" opacity=".35"/><circle cx="20" cy="45" r="3.3" fill="#fff" opacity=".55"/><path class="sp-ck" pathLength="1" d="M22 33l9 9 17-20" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="sp-name">След</div><div class="sp-tag">Трекер привычек</div></div></div>
+<script>(function(){var s=document.getElementById('splash'),t0=Date.now(),MIN=1600,done=false;function hide(){if(done||!s)return;done=true;var wait=Math.max(0,MIN-(Date.now()-t0));setTimeout(function(){s.classList.add('out');setTimeout(function(){s.parentNode&&s.parentNode.removeChild(s);},650);},wait);}window.addEventListener('load',hide);setTimeout(hide,4000);window.hideSplash=hide;})();</script>
+
 <main>
   <header class="top"><div class="hl"><div class="brand"><svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lgg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#14A39A"/><stop offset="1" stop-color="#0B5E5A"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(#lgg)"/><circle cx="13" cy="50" r="2.6" fill="#fff" opacity=".35"/><circle cx="20" cy="45" r="3.3" fill="#fff" opacity=".55"/><path d="M22 33l9 9 17-20" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>След</span></div><h1 id="h1">Привычки</h1></div><button class="avatar" id="prof" aria-label="Профиль и настройки">☺</button></header>
   <p class="sub" id="today"></p>
