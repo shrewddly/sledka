@@ -1494,29 +1494,108 @@ if('serviceWorker' in navigator)addEventListener('load',function(){navigator.ser
 addEventListener('online',function(){pushSync();if(CU&&watchErr)reWatch();});
 </script>
 <script type="module">
-const FIREBASE_CONFIG={apiKey:"AIzaSyBnVYqeVRWpSDjQr3tuMkHX2tg82Sa4QnI",authDomain:"habit-5437c.firebaseapp.com",projectId:"habit-5437c",appId:"1:682904428462:web:1e41721733c82783c8b23f"};
-let started=false;
-async function start(){
-  if(started)return;started=true;
-  try{
-    const V='10.12.2',B='https://www.gstatic.com/firebasejs/'+V+'/';
-    const [{initializeApp},A,F]=await Promise.all([import(B+'firebase-app.js'),import(B+'firebase-auth.js'),import(B+'firebase-firestore.js')]);
-    const app=initializeApp(FIREBASE_CONFIG),auth=A.getAuth(app),db=F.getFirestore(app);
-    window.attachCloud({
-      onUser(cb){A.onAuthStateChanged(auth,cb);},
-      signIn:(e,p)=>A.signInWithEmailAndPassword(auth,e,p),
-      signUp:(e,p)=>A.createUserWithEmailAndPassword(auth,e,p),
-      reset:e=>A.sendPasswordResetEmail(auth,e),
-      signOut:()=>A.signOut(auth),
-      async del(pw){const u=auth.currentUser;if(pw!=null)await A.reauthenticateWithCredential(u,A.EmailAuthProvider.credential(u.email,pw));else await A.reauthenticateWithPopup(u,new A.GoogleAuthProvider());await F.deleteDoc(F.doc(db,'users',u.uid));await A.deleteUser(u);},
-      watch(uid,next,err){return F.onSnapshot(F.doc(db,'users',uid),s=>next(s.exists()?s.data():null),err);},
-      save(uid,data){return F.setDoc(F.doc(db,'users',uid),data);}
-    });
-  }catch(e){started=false;window.attachCloud(null,e);}
+const FIREBASE_CONFIG={apiKey:'AIzaSyBnVYqeVRWpSDjQr3tuMkHX2tg82Sa4QnI',authDomain:'habit-5437c.firebaseapp.com',projectId:'habit-5437c',appId:'1:682904428462:web:1e41721733c82783c8b23f'};
+const PROXY='https://sledkasync.arlen-eupov.workers.dev';
+const AUTH_KEY='sledka-auth-p1';
+const EMAP={'INVALID_LOGIN_CREDENTIALS':'auth/invalid-credential','INVALID_PASSWORD':'auth/wrong-password','EMAIL_NOT_FOUND':'auth/user-not-found','EMAIL_EXISTS':'auth/email-already-in-use','WEAK_PASSWORD':'auth/weak-password','INVALID_EMAIL':'auth/invalid-email','TOO_MANY_ATTEMPTS_TRY_LATER':'auth/too-many-requests','MISSING_PASSWORD':'auth/missing-password','OPERATION_NOT_ALLOWED':'auth/operation-not-allowed','PASSWORD_LOGIN_DISABLED':'auth/operation-not-allowed','INVALID_ID_TOKEN':'auth/invalid-credential','USER_DISABLED':'auth/user-not-found'};
+let auth=null;
+try{const r=localStorage.getItem(AUTH_KEY);if(r)auth=JSON.parse(r);}catch(e){auth=null;}
+function persistAuth(){try{if(auth)localStorage.setItem(AUTH_KEY,JSON.stringify(auth));else localStorage.removeItem(AUTH_KEY);}catch(e){}}
+let userCb=null;
+function emit(){if(userCb)userCb(auth?makeUser(auth):null);}
+function makeUser(a){return {uid:a.localId,email:a.email||'',providerData:[{providerId:'password'}]};}
+async function refresh(){
+  if(!auth)return null;
+  if(auth.expires>Date.now()+60000)return auth.idToken;
+  const r=await fetch(PROXY+'/token/v1/token?key='+encodeURIComponent(FIREBASE_CONFIG.apiKey),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({grant_type:'refresh_token',refresh_token:auth.refreshToken})});
+  if(!r.ok)throw mkErr('auth/network-request-failed');
+  const d=await r.json();
+  if(!d.id_token)throw mkErr('auth/network-request-failed');
+  auth.idToken=d.id_token;auth.refreshToken=d.refresh_token;auth.localId=d.user_id;auth.expires=Date.now()+Number(d.expires_in||3600)*1000;
+  persistAuth();
+  return auth.idToken;
 }
-start();
-setTimeout(()=>{if(!window.CL)window.attachCloud(null,new Error('timeout'));},10000);
-addEventListener('online',start);
+function mkErr(code){const e=new Error(code);e.code=code;return e;}
+function restErr(d){
+  const msg=(d&&d.error&&d.error.message)||'';
+  const key=msg.split(':')[0].trim().toUpperCase();
+  return mkErr(EMAP[key]||'auth/network-request-failed');
+}
+async function authApi(path,body){
+  let r;
+  try{
+    r=await fetch(PROXY+'/auth/v1/'+path+'?key='+encodeURIComponent(FIREBASE_CONFIG.apiKey),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  }catch(e){throw mkErr('auth/network-request-failed');}
+  const d=await r.json().catch(function(){return {};});
+  if(!r.ok)throw restErr(d);
+  return d;
+}
+function setAuth(d){
+  auth={localId:d.localId,email:d.email||'',idToken:d.idToken,refreshToken:d.refreshToken,expires:Date.now()+Number(d.expiresIn||3600)*1000};
+  persistAuth();
+  emit();
+  return makeUser(d);
+}
+const FS=PROXY+'/fs/v1/projects/'+FIREBASE_CONFIG.projectId+'/databases/(default)/documents/users/';
+async function fsHeaders(){const t=await refresh();return {Authorization:'Bearer '+t,'Content-Type':'application/json'};}
+async function fsGet(uid){
+  const h=await fsHeaders();
+  let r;
+  try{r=await fetch(FS+encodeURIComponent(uid),{headers:h});}
+  catch(e){throw mkErr('auth/network-request-failed');}
+  if(r.status===404)return null;
+  if(!r.ok)throw mkErr('auth/network-request-failed');
+  const d=await r.json();
+  const f=d.fields||{};
+  return {json:f.json?f.json.stringValue:null,ts:f.ts?Number(f.ts.integerValue||f.ts.doubleValue||0):0};
+}
+async function fsSave(uid,data){
+  const h=await fsHeaders();
+  let r;
+  try{r=await fetch(FS+encodeURIComponent(uid),{method:'PATCH',headers:h,body:JSON.stringify({fields:{json:{stringValue:data.json},ts:{integerValue:String(data.ts||0)}}})});}
+  catch(e){throw mkErr('auth/network-request-failed');}
+  if(!r.ok)throw mkErr('auth/network-request-failed');
+}
+async function fsDel(uid){
+  const h=await fsHeaders();
+  let r;
+  try{r=await fetch(FS+encodeURIComponent(uid),{method:'DELETE',headers:h});}
+  catch(e){throw mkErr('auth/network-request-failed');}
+  if(!r.ok&&!r.status===404)throw mkErr('auth/network-request-failed');
+}
+window.attachCloud({
+  onUser(cb){userCb=cb;emit();},
+  signIn:async function(e,p){const d=await authApi('accounts:signInWithPassword',{email:e,password:p,returnSecureToken:true});return setAuth(d);},
+  signUp:async function(e,p){const d=await authApi('accounts:signUp',{email:e,password:p,returnSecureToken:true});return setAuth(d);},
+  reset:async function(e){await authApi('accounts:sendOobCode',{requestType:'PASSWORD_RESET',email:e});},
+  signOut:async function(){auth=null;persistAuth();emit();},
+  del:async function(pw){
+    if(!pw)throw mkErr('auth/missing-password');
+    const d2=await authApi('accounts:signInWithPassword',{email:auth.email,password:pw,returnSecureToken:true});
+    auth.idToken=d2.idToken;auth.expires=Date.now()+Number(d2.expiresIn||3600)*1000;persistAuth();
+    await authApi('accounts:delete',{idToken:auth.idToken});
+    await fsDel(auth.localId).catch(function(){});
+    auth=null;persistAuth();emit();
+  },
+  watch:function(uid,next,err){
+    let stop=false;
+    async function poll(){
+      if(stop)return;
+      try{
+        const d=await fsGet(uid);
+        if(stop)return;
+        next(d);
+      }catch(e){
+        if(stop)return;
+        err(e);
+      }
+      if(!stop)setTimeout(poll,25000);
+    }
+    poll();
+    return function(){stop=true;};
+  },
+  save:function(uid,data){return fsSave(uid,data);}
+});
 </script>
 </body>
 </html>
