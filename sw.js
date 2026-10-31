@@ -1,4 +1,4 @@
-const C='habits-v26',D='habits-data',SHELL=['./','index.html','privacy.html','manifest.webmanifest','icon-180.png','icon-192.png','icon-512.png','icon-maskable-512.png','fonts/lora-cyrillic-wght-normal.woff2','fonts/lora-latin-wght-normal.woff2','fonts/manrope-cyrillic-wght-normal.woff2','fonts/manrope-latin-wght-normal.woff2','fonts/nunito-cyrillic-wght-normal.woff2','fonts/nunito-latin-wght-normal.woff2','fonts/onest-cyrillic-wght-normal.woff2','fonts/onest-latin-wght-normal.woff2'];
+const C='habits-v27',D='habits-data',SHELL=['./','index.html','privacy.html','manifest.webmanifest','icon-180.png','icon-192.png','icon-512.png','icon-maskable-512.png','fonts/lora-cyrillic-wght-normal.woff2','fonts/lora-latin-wght-normal.woff2','fonts/manrope-cyrillic-wght-normal.woff2','fonts/manrope-latin-wght-normal.woff2','fonts/nunito-cyrillic-wght-normal.woff2','fonts/nunito-latin-wght-normal.woff2','fonts/onest-cyrillic-wght-normal.woff2','fonts/onest-latin-wght-normal.woff2'];
 const EXT=['www.gstatic.com','fonts.googleapis.com','fonts.gstatic.com'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C&&x!==D).map(x=>caches.delete(x)))).then(()=>self.clients.claim()));});
@@ -9,11 +9,14 @@ self.addEventListener('fetch',e=>{
   if(r.mode==='navigate'){
     e.respondWith((async()=>{
       const c=await caches.open(C);
-      const net=fetch(r).then(x=>{c.put(r,x.clone());return x;});
-      e.waitUntil(net.catch(()=>{}));
-      const hit=(await c.match(r))||(await c.match('index.html'));
-      if(!hit)return net.catch(()=>Response.error());
-      return Promise.race([net,new Promise(res=>setTimeout(()=>res(hit),2500))]).catch(()=>hit);
+      try{
+        const x=await fetch(r);
+        if(x&&x.ok)c.put('index.html',x.clone());
+        return x;
+      }catch(_){
+        const hit=(await c.match(r))||(await c.match('index.html'));
+        return hit||Response.error();
+      }
     })());
     return;
   }
