@@ -1142,7 +1142,7 @@ $('sbody').addEventListener('click',function(e){
 
   if(a==='remperm'){if(window.Notification)Notification.requestPermission().then(function(){scheduleReminders();$('sbody').innerHTML=sheetHtml();});return;}
   if(a==='remtest'){if(swReg&&window.Notification&&Notification.permission==='granted')swReg.showNotification('Sledka',{body:LANG==='en'?'Reminders work ✓':'Напоминания работают ✓',icon:'icon-192.png'});return;}
-  if(a==='rempush'){subPush().then(function(){$('sbody').innerHTML=sheetHtml();});return;}
+  if(a==='rempush'){var RM9={'no-push':(LANG==='en'?'Push is not available here — open the installed app':'Push недоступен — открой установленное приложение'),'denied':(LANG==='en'?'Notifications are blocked — allow them in Settings':'Уведомления заблокированы — разреши их в настройках'),'not-signed-in':(LANG==='en'?'Sign in first':'Сначала войди в аккаунт')};subPush().then(function(res){$('sbody').innerHTML=sheetHtml();if(res&&res!=='ok')toast(RM9[res]||String(res));},function(err){$('sbody').innerHTML=sheetHtml();toast((LANG==='en'?'Error: ':'Ошибка: ')+(err&&err.message||''));});return;}
 
   if(a==='arcr'){var hr2=S.habits.filter(function(x){return x.id===b.dataset.id})[0];if(hr2){delete hr2.arch;touch('h:'+hr2.id);save();render();$('sbody').innerHTML=sheetHtml();}return;}
 
@@ -1535,8 +1535,10 @@ function remHtml(){
   if('PushManager' in window){
     if(CU){
       var pushed=localStorage.getItem('sledka-push');
+      var ios9=/iphone|ipad|ipod/i.test(navigator.userAgent)&&!navigator.standalone;
       if(pushed)out+='<p class="meta">'+(RU?'Push включён на этом устройстве ✓ — работает и на iPhone, даже когда приложение закрыто.':'Push is enabled on this device ✓ — works on iPhone too, even when the app is closed.')+'</p>';
-      else out+='<div class="btns"><button class="pri" data-s="rempush">'+(RU?'Включить push (нужно для iPhone)':'Enable push (needed for iPhone)')+'</button></div><p class="meta">'+(RU?'Push доставит напоминание, даже когда приложение закрыто. Обязательно для iPhone, полезно и на Android.':'Push delivers reminders even when the app is closed. Required on iPhone, useful on Android.')+'</p>';
+      else if(ios9)out+='<p class="meta">'+(RU?'Сначала добавь Sledka на экран «Домой»: в Safari нажми «Поделиться» → «На экран Домой», открой приложение оттуда — и кнопка здесь заработает.':'First add Sledka to your Home Screen: in Safari tap Share → Add to Home Screen, open the app from there — the button will work.')+'</p>';
+      else out+='<div class="btns"><button class="pri" data-s="rempush">'+(RU?'Включить push':'Enable push')+'</button></div><p class="meta">'+(RU?'Push доставит напоминание, даже когда приложение закрыто.':'Push delivers reminders even when the app is closed.')+'</p>';
     }else out+='<p class="meta">'+(RU?'Push-напоминания (нужны для iPhone) требуют аккаунта — войдите и вернитесь сюда.':'Push reminders (needed on iPhone) require an account — sign in and come back here.')+'</p>';
   }
   return out;
