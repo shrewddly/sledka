@@ -1,5 +1,5 @@
-const C='habits-v42',D='habits-data',UKEY='push-uid',LKEY='push-lang',SHELL=['./','index.html','privacy.html','manifest.webmanifest','icon-180.png','icon-192.png','icon-512.png','icon-maskable-512.png','fonts/lora-cyrillic-wght-normal.woff2','fonts/lora-latin-wght-normal.woff2','fonts/manrope-cyrillic-wght-normal.woff2','fonts/manrope-latin-wght-normal.woff2','fonts/nunito-cyrillic-wght-normal.woff2','fonts/nunito-latin-wght-normal.woff2','fonts/onest-cyrillic-wght-normal.woff2','fonts/onest-latin-wght-normal.woff2'];
-const PROXY='https://sledkasync.arlen-eupov.workers.dev';
+const C='habits-v43',D='habits-data',UKEY='push-uid',LKEY='push-lang',SHELL=['./','index.html','privacy.html','manifest.webmanifest','icon-180.png','icon-192.png','icon-512.png','icon-maskable-512.png','fonts/lora-cyrillic-wght-normal.woff2','fonts/lora-latin-wght-normal.woff2','fonts/manrope-cyrillic-wght-normal.woff2','fonts/manrope-latin-wght-normal.woff2','fonts/nunito-cyrillic-wght-normal.woff2','fonts/nunito-latin-wght-normal.woff2','fonts/onest-cyrillic-wght-normal.woff2','fonts/onest-latin-wght-normal.woff2'];
+const PROXY='https://api.sledka.ru',PROXY2='https://sledkasync.arlen-eupov.workers.dev';
 const VAPID='BN0eSEdGKrchANnTWs6t8SWkqcmcKb0cZyRIgsW1vB1cc0ywjjSZ9pKYVdc85sj_0wghb4y2SFdd9OazeiaPJ88';
 function b64u(s){s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';const b=atob(s),a=new Uint8Array(b.length);for(let i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return a.buffer;}
 function put(k,v){return caches.open(D).then(c=>c.put(k,new Response(String(v),{headers:{'Content-Type':'text/plain'}})));}
@@ -54,7 +54,7 @@ function itemsFromPayload(d){
   return null;
 }
 function fetchItems(uid){
-  return fetch(PROXY+'/rem?uid='+encodeURIComponent(uid),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;})
+  return fetch(PROXY+'/rem?uid='+encodeURIComponent(uid),{cache:'no-store'}).catch(function(){return fetch(PROXY2+'/rem?uid='+encodeURIComponent(uid),{cache:'no-store'});}).then(function(r){return r.ok?r.json():null;})
     .then(function(j){return (j&&j.items)||[];}).catch(function(){return [];});
 }
 

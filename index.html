@@ -1536,7 +1536,9 @@ addEventListener('online',function(){pushSync();if(CU&&watchErr)reWatch();});
 </script>
 <script type="module">
 const FIREBASE_CONFIG={apiKey:'AIzaSyBnVYqeVRWpSDjQr3tuMkHX2tg82Sa4QnI',authDomain:'habit-5437c.firebaseapp.com',projectId:'habit-5437c',appId:'1:682904428462:web:1e41721733c82783c8b23f'};
-const PROXY='https://sledkasync.arlen-eupov.workers.dev';
+const PROXIES=['https://api.sledka.ru','https://sledkasync.arlen-eupov.workers.dev'];
+let goodProxy=PROXIES[0];
+async function pfetch(path,opts){const order=[goodProxy].concat(PROXIES.filter(function(p){return p!==goodProxy;}));let last=null;for(let i=0;i<order.length;i++){try{const r=await fetch(order[i]+path,opts);goodProxy=order[i];return r;}catch(e){last=e;}}throw mkErr('auth/network-request-failed');}
 const VAPID_PUBLIC='BN0eSEdGKrchANnTWs6t8SWkqcmcKb0cZyRIgsW1vB1cc0ywjjSZ9pKYVdc85sj_0wghb4y2SFdd9OazeiaPJ88';
 const AUTH_KEY='sledka-auth-p1';
 const EMAP={'INVALID_LOGIN_CREDENTIALS':'auth/invalid-credential','INVALID_PASSWORD':'auth/wrong-password','EMAIL_NOT_FOUND':'auth/user-not-found','EMAIL_EXISTS':'auth/email-already-in-use','WEAK_PASSWORD':'auth/weak-password','INVALID_EMAIL':'auth/invalid-email','TOO_MANY_ATTEMPTS_TRY_LATER':'auth/too-many-requests','MISSING_PASSWORD':'auth/missing-password','OPERATION_NOT_ALLOWED':'auth/operation-not-allowed','PASSWORD_LOGIN_DISABLED':'auth/operation-not-allowed','INVALID_ID_TOKEN':'auth/invalid-credential','USER_DISABLED':'auth/user-not-found'};
@@ -1549,7 +1551,7 @@ function makeUser(a){return {uid:a.localId,email:a.email||'',providerData:[{prov
 async function refresh(){
   if(!auth)return null;
   if(auth.expires>Date.now()+60000)return auth.idToken;
-  const r=await fetch(PROXY+'/token/v1/token?key='+encodeURIComponent(FIREBASE_CONFIG.apiKey),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({grant_type:'refresh_token',refresh_token:auth.refreshToken})});
+  const r=await pfetch('/token/v1/token?key='+encodeURIComponent(FIREBASE_CONFIG.apiKey),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({grant_type:'refresh_token',refresh_token:auth.refreshToken})});
   if(!r.ok)throw mkErr('auth/network-request-failed');
   const d=await r.json();
   if(!d.id_token)throw mkErr('auth/network-request-failed');
@@ -1566,7 +1568,7 @@ function restErr(d){
 async function authApi(path,body){
   let r;
   try{
-    r=await fetch(PROXY+'/auth/v1/'+path+'?key='+encodeURIComponent(FIREBASE_CONFIG.apiKey),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    r=await pfetch('/auth/v1/'+path+'?key='+encodeURIComponent(FIREBASE_CONFIG.apiKey),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
   }catch(e){throw mkErr('auth/network-request-failed');}
   const d=await r.json().catch(function(){return {};});
   if(!r.ok)throw restErr(d);
@@ -1578,14 +1580,14 @@ function setAuth(d){
   emit();
   return makeUser(d);
 }
-const FS=PROXY+'/fs/v1/projects/'+FIREBASE_CONFIG.projectId+'/databases/(default)/documents/users/';
-const FSD=PROXY+'/fs/v1/projects/'+FIREBASE_CONFIG.projectId+'/databases/(default)/documents/';
+function fsU(){return goodProxy+'/fs/v1/projects/'+FIREBASE_CONFIG.projectId+'/databases/(default)/documents/users/';}
+function fsD(){return goodProxy+'/fs/v1/projects/'+FIREBASE_CONFIG.projectId+'/databases/(default)/documents/';}
 const PUSHC='push/';
 async function fsHeaders(){const t=await refresh();return {Authorization:'Bearer '+t,'Content-Type':'application/json'};}
 async function fsGet(uid){
   const h=await fsHeaders();
   let r;
-  try{r=await fetch(FS+encodeURIComponent(uid),{headers:h});}
+  try{r=await pfetch(fsu()+encodeURIComponent(uid),{headers:h});}
   catch(e){throw mkErr('auth/network-request-failed');}
   if(r.status===404)return null;
   if(!r.ok)throw mkErr('auth/network-request-failed');
@@ -1596,14 +1598,14 @@ async function fsGet(uid){
 async function fsSave(uid,data){
   const h=await fsHeaders();
   let r;
-  try{r=await fetch(FS+encodeURIComponent(uid),{method:'PATCH',headers:h,body:JSON.stringify({fields:{json:{stringValue:data.json},ts:{integerValue:String(data.ts||0)}}})});}
+  try{r=await pfetch(fsu()+encodeURIComponent(uid),{method:'PATCH',headers:h,body:JSON.stringify({fields:{json:{stringValue:data.json},ts:{integerValue:String(data.ts||0)}}})});}
   catch(e){throw mkErr('auth/network-request-failed');}
   if(!r.ok)throw mkErr('auth/network-request-failed');
 }
 async function fsDel(uid){
   const h=await fsHeaders();
   let r;
-  try{r=await fetch(FS+encodeURIComponent(uid),{method:'DELETE',headers:h});}
+  try{r=await pfetch(fsu()+encodeURIComponent(uid),{method:'DELETE',headers:h});}
   catch(e){throw mkErr('auth/network-request-failed');}
   if(!r.ok&&r.status!==404)throw mkErr('auth/network-request-failed');
 }
@@ -1613,13 +1615,13 @@ async function fsSetPath(path,plain){
   const fields={};
   Object.keys(plain).forEach(function(k){fields[k]=(typeof plain[k]==='number')?{integerValue:String(plain[k])}:{stringValue:String(plain[k])};});
   let r;
-  try{r=await fetch(FSD+path,{method:'PATCH',headers:h,body:JSON.stringify({fields:fields})});}
+  try{r=await pfetch(fsd()+path,{method:'PATCH',headers:h,body:JSON.stringify({fields:fields})});}
   catch(e){throw mkErr('auth/network-request-failed');}
   if(!r.ok)throw mkErr('auth/network-request-failed');
 }
 async function fsDelPath(path){
   const h=await fsHeaders();
-  try{await fetch(FSD+path,{method:'DELETE',headers:h});}catch(e){}
+  try{await pfetch(fsd()+path,{method:'DELETE',headers:h});}catch(e){}
 }
 function vapidKey(){
   const b64=VAPID_PUBLIC.replace(/-/g,'+').replace(/_/g,'/');
