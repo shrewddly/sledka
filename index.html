@@ -1108,7 +1108,7 @@ $('sbody').addEventListener('click',function(e){
 
   if(a==='remperm'){if(window.Notification)Notification.requestPermission().then(function(p){if(p!=='granted')toast(LANG==='en'?'Notifications are blocked in browser settings':'Уведомления запрещены в настройках браузера');scheduleReminders();$('sbody').innerHTML=sheetHtml();});return;}
   if(a==='remtest'){if(swReg&&window.Notification&&Notification.permission==='granted')swReg.showNotification('Sledka',{body:LANG==='en'?'Reminders work ✓':'Напоминания работают ✓',icon:'icon-192.png',badge:'icon-192.png'});return;}
-  if(a==='rempush'){if(!CL){toast(LANG==='en'?'Cloud is not loaded yet':'Облако ещё не загрузилось');return;}var RM9={'no-push':(LANG==='en'?'Push is not available here — open the installed app':'Push недоступен — открой установленное приложение'),'denied':(LANG==='en'?'Notifications are blocked — allow them in Settings':'Уведомления заблокированы — разреши их в настройках'),'not-signed-in':(LANG==='en'?'Sign in first':'Сначала войди в аккаунт')};CL.enablePush().then(function(res){$('sbody').innerHTML=sheetHtml();toast(res==='ok'?(LANG==='en'?'Push enabled ✓':'Push включён ✓'):(RM9[res]||String(res)));},function(err){$('sbody').innerHTML=sheetHtml();var m=(err&&err.code==='auth/network-request-failed')?(LANG==='en'?'Cannot reach the reminder server. Check your connection and try again.':'Нет связи с сервером напоминаний. Проверь интернет и попробуй снова.'):(err&&err.message||'ошибка');toast(m);});return;}
+  if(a==='rempush'){if(!CL){toast(LANG==='en'?'Cloud is not loaded yet':'Облако ещё не загрузилось');return;}var RM9={'no-push':(LANG==='en'?'Push is not available here — open the installed app':'Push недоступен — открой установленное приложение'),'denied':(LANG==='en'?'Notifications are blocked — allow them in Settings':'Уведомления заблокированы — разреши их в настройках'),'not-signed-in':(LANG==='en'?'Sign in first':'Сначала войди в аккаунт'),'fs/403':(LANG==='en'?'Database rules deny push — add the push rule in the Firebase console':'Правила базы запрещают push — добавь правило для push в консоли Firebase')};CL.enablePush().then(function(res){$('sbody').innerHTML=sheetHtml();toast(res==='ok'?(LANG==='en'?'Push enabled ✓':'Push включён ✓'):(RM9[res]||String(res)));},function(err){$('sbody').innerHTML=sheetHtml();var m=(err&&err.code==='auth/network-request-failed')?(LANG==='en'?'Cannot reach the reminder server. Check your connection and try again.':'Нет связи с сервером напоминаний. Проверь интернет и попробуй снова.'):(err&&err.message||'ошибка');toast(m);});return;}
 
   if(a==='arcr'){var hr2=S.habits.filter(function(x){return x.id===b.dataset.id})[0];if(hr2){delete hr2.arch;touch('h:'+hr2.id);save();render();$('sbody').innerHTML=sheetHtml();}return;}
 
@@ -1552,7 +1552,7 @@ async function refresh(){
   if(!auth)return null;
   if(auth.expires>Date.now()+60000)return auth.idToken;
   const r=await pfetch('/token/v1/token?key='+encodeURIComponent(FIREBASE_CONFIG.apiKey),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({grant_type:'refresh_token',refresh_token:auth.refreshToken})});
-  if(!r.ok)throw mkErr('auth/network-request-failed');
+  if(!r.ok)throw mkErr('fs/' + r.status);
   const d=await r.json();
   if(!d.id_token)throw mkErr('auth/network-request-failed');
   auth.idToken=d.id_token;auth.refreshToken=d.refresh_token;auth.localId=d.user_id;auth.expires=Date.now()+Number(d.expires_in||3600)*1000;
@@ -1590,7 +1590,7 @@ async function fsGet(uid){
   try{r=await pfetch(fsu()+encodeURIComponent(uid),{headers:h});}
   catch(e){throw mkErr('auth/network-request-failed');}
   if(r.status===404)return null;
-  if(!r.ok)throw mkErr('auth/network-request-failed');
+  if(!r.ok)throw mkErr('fs/' + r.status);
   const d=await r.json();
   const f=d.fields||{};
   return {json:f.json?f.json.stringValue:null,ts:f.ts?Number(f.ts.integerValue||f.ts.doubleValue||0):0};
