@@ -1063,7 +1063,7 @@ document.addEventListener('change',function(e){
     try{
       var X=JSON.parse(rd.result);if(!X||!Array.isArray(X.habits)||typeof X.done!=='object'||!X.done)throw 0;
       if(!confirm(LANG==='en'?'Replace current habits with the backup data?':'Заменить текущие привычки данными из копии?'))return;
-      var old=Object.keys(enumerate(S));mergeDocs(S,X,'take');
+      var old=Object.keys(enumerate(S));mergeDocs(S,X,'take');if(CU)S.owner=CU.uid;
       old.concat(Object.keys(enumerate(S))).forEach(touch);
       save();render();toast('Данные восстановлены');
     }catch(err){toast('Файл не похож на резервную копию');}
