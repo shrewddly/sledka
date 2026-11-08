@@ -1,4 +1,4 @@
-const C='habits-v44',D='habits-data',UKEY='push-uid',LKEY='push-lang',SHELL=['./','index.html','privacy.html','manifest.webmanifest','icon-180.png','icon-192.png','icon-512.png','icon-maskable-512.png','fonts/lora-cyrillic-wght-normal.woff2','fonts/lora-latin-wght-normal.woff2','fonts/manrope-cyrillic-wght-normal.woff2','fonts/manrope-latin-wght-normal.woff2','fonts/nunito-cyrillic-wght-normal.woff2','fonts/nunito-latin-wght-normal.woff2','fonts/onest-cyrillic-wght-normal.woff2','fonts/onest-latin-wght-normal.woff2'];
+const C='habits-v45',D='habits-data',UKEY='push-uid',LKEY='push-lang',SHELL=['./','index.html','privacy.html','manifest.webmanifest','icon-180.png','icon-192.png','icon-512.png','icon-maskable-512.png','fonts/lora-cyrillic-wght-normal.woff2','fonts/lora-latin-wght-normal.woff2','fonts/manrope-cyrillic-wght-normal.woff2','fonts/manrope-latin-wght-normal.woff2','fonts/nunito-cyrillic-wght-normal.woff2','fonts/nunito-latin-wght-normal.woff2','fonts/onest-cyrillic-wght-normal.woff2','fonts/onest-latin-wght-normal.woff2'];
 const PROXY='https://api.sledka.ru',PROXY2='https://sledkasync.arlen-eupov.workers.dev';
 const VAPID='BN0eSEdGKrchANnTWs6t8SWkqcmcKb0cZyRIgsW1vB1cc0ywjjSZ9pKYVdc85sj_0wghb4y2SFdd9OazeiaPJ88';
 function b64u(s){s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';const b=atob(s),a=new Uint8Array(b.length);for(let i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return a.buffer;}
@@ -21,7 +21,7 @@ self.addEventListener('fetch',e=>{
       const c=await caches.open(C);
       try{
         const x=await fetch(r);
-        if(x&&x.ok)c.put('index.html',x.clone());
+        if(x&&x.ok)c.put(u.pathname==='/'||u.pathname==='/index.html'?'index.html':r,x.clone());
         return x;
       }catch(_){
         const hit=(await c.match(r))||(await c.match('index.html'));

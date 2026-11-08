@@ -424,7 +424,7 @@ function num(v){return v.toLocaleString(LANG==='en'?'en-US':'ru-RU');}
 function fv(h,v){return num(v)+(h.unit?' '+h.unit:'');}
 function short(v){return v>=1000?(Math.round(v/100)/10).toString().replace('.',',')+'к':String(v);}
 function buzz(){try{navigator.vibrate&&navigator.vibrate(12);}catch(e){}}
-function toast(t){pendingUndo=null;var e=$('toast');e.textContent=t;e.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){e.classList.remove('show');},2800);}
+function toast(t){pendingUndo=null;var e=$('toast');e.textContent=t;e.classList.add('show');clearTimeout(toastT);toastT=setTimeout(hideToast,2800);}
 function md(h){return h.days&&h.days.length?'d':(h.wk&&h.wk<7?'w':'a');}
 function wk(h){if(h.ev)return Math.max(1,Math.round(7/h.ev));var m=md(h);return m==='d'?h.days.length:m==='w'?h.wk:7;}
 function sched(h,d){if(h.ev)return evOn(h,d);return md(h)!=='d'||h.days.indexOf(wd(d))>=0;}
@@ -850,7 +850,10 @@ LANG=S.lang||(/^ru/i.test(navigator.language||'')?'ru':'en');document.documentEl
   if(S.theme)r.setAttribute('data-theme',S.theme);else r.removeAttribute('data-theme');
   window.themeLbl=S.theme==='dark'?'Тема: тёмная':S.theme==='light'?'Тема: светлая':'Тема: авто';var t=$('th');if(t)t.textContent=window.themeLbl;
   var a=ACC[S.accent|0]||ACC[0],dk=S.theme==='dark'||(!S.theme&&matchMedia('(prefers-color-scheme: dark)').matches),st=r.style;if(S.skin)r.setAttribute('data-skin',S.skin);else r.removeAttribute('data-skin');if(dk)r.setAttribute('data-dark','1');else r.removeAttribute('data-dark');st.setProperty('--font',FONTS[S.font]||'Onest');
-  if(S.accent){st.setProperty('--accent',dk?a[1]:a[0]);st.setProperty('--accent-ink',dk?'#0B1418':'#fff');}else{st.removeProperty('--accent');st.removeProperty('--accent-ink');}applyIcon();
+  if(S.accent){st.setProperty('--accent',dk?a[1]:a[0]);st.setProperty('--accent-ink',dk?'#0B1418':'#fff');}else{st.removeProperty('--accent');st.removeProperty('--accent-ink');}
+  var mtc=document.querySelectorAll('meta[name="theme-color"]');
+  if(mtc.length){var mc=dk?'#0F1B20':'#EAF0F2';for(var mq=0;mq<mtc.length;mq++){mtc[mq].setAttribute('content',mc);mtc[mq].removeAttribute('media');}}
+  applyIcon();
 }
 
 var LANG='ru';
@@ -943,6 +946,72 @@ function enumerate(D){
   Object.keys(D.doneT||{}).forEach(function(id){Object.keys(D.doneT[id]||{}).forEach(function(k){v['t:'+id+':'+k]=D.doneT[id][k];});});
   return v;
 }
+function sanitizeDoc(D){
+  try{
+    if(!D||typeof D!=='object')return D;
+    var dateRe=/^\d{4}-\d{2}-\d{2}$/,clean=function(s,n){return typeof s==='string'?s.slice(0,n):'';};
+    if(typeof D.name==='string')D.name=D.name.slice(0,24);
+    if(typeof D.uits!=='number'||!isFinite(D.uits))delete D.uits;
+    if(Array.isArray(D.habits)){
+      D.habits=D.habits.slice(0,200).map(function(h){
+        if(!h||typeof h!=='object')return null;
+        var o={id:(typeof h.id==='string'&&/^[\w-]{1,40}$/.test(h.id))?h.id:null};
+        if(!o.id)return null;
+        if(h.name&&typeof h.name==='object'){o.name={r:clean(h.name.r,60),e:clean(h.name.e,60)};if(!o.name.r&&!o.name.e)o.name.r='—';}
+        else if(typeof h.name==='string')o.name={r:h.name.slice(0,60),e:''};
+        else o.name={r:'—',e:''};
+        if(h.icon)o.icon=Array.from(String(h.icon)).slice(0,2).join('');
+        if(h.note)o.note=clean(h.note,120);
+        if(h.unit)o.unit=clean(h.unit,12).replace(/[<>&"']/g,'');
+        var nk=['goal','minv','wk','ch','color'],ni;
+        for(ni=0;ni<nk.length;ni++){var kv=h[nk[ni]];if(typeof kv==='number'&&isFinite(kv)&&kv>=0&&kv<1e7&&kv%1===0)o[nk[ni]]=kv;}
+        if(o.color!=null&&o.color>7)delete o.color;
+        if(h.ev===2||h.ev===3||h.ev===4||h.ev===5||h.ev===7)o.ev=h.ev;
+        if(Array.isArray(h.days)){o.days=h.days.filter(function(x){return x>=0&&x<=6&&x%1===0}).slice(0,6);if(!o.days.length)delete o.days;}
+        if(Array.isArray(h.quick))o.quick=h.quick.filter(function(x){return typeof x==='number'&&isFinite(x)&&x>0&&x<1e7}).slice(0,4);
+        if(h.quit)o.quit=true;
+        if(h.arch)o.arch=true;
+        if(h.sh==='s')o.sh='s';
+        if(h.tod==='m'||h.tod==='d'||h.tod==='e')o.tod=h.tod;
+        if(typeof h.rem==='string'&&/^([01]\d|2[0-3]):[0-5]\d$/.test(h.rem))o.rem=h.rem;
+        if(typeof h.created==='string'&&dateRe.test(h.created))o.created=h.created;
+        if(Array.isArray(h.rel)){o.rel=h.rel.filter(function(k){return typeof k==='string'&&dateRe.test(k)}).slice(0,4000);if(!o.rel.length)delete o.rel;}
+        if(Array.isArray(h.subs))o.subs=h.subs.slice(0,8).map(function(s){return s&&typeof s==='object'?{r:clean(s.r,40),e:clean(s.e,40)}:{r:clean(s,40),e:''};});
+        return o;
+      }).filter(Boolean);
+    }else D.habits=[];
+    var cleanMap=function(src,valOk){
+      var out={};
+      Object.keys(src||{}).forEach(function(id){
+        if(!/^[\w-]{1,40}$/.test(id))return;
+        var m=src[id];
+        if(!m||typeof m!=='object')return;
+        var om={},mk=Object.keys(m);
+        for(var i=0;i<mk.length;i++){var k=mk[i];if(dateRe.test(k)&&valOk(m[k]))om[k]=m[k];}
+        if(Object.keys(om).length)out[id]=om;
+      });
+      return out;
+    };
+    D.done=cleanMap(D.done,function(v){return v===true||(typeof v==='number'&&isFinite(v)&&v>=0&&v<1e12);});
+    D.skips=cleanMap(D.skips,function(v){return v===true;});
+    D.doneT=cleanMap(D.doneT,function(v){return typeof v==='string'&&/^([01]\d|2[0-3]):[0-5]\d$/.test(v);});
+    var notes={},nk2=Object.keys(D.notes||{});
+    for(var i2=0;i2<nk2.length;i2++){
+      var k2=nk2[i2];
+      if(!dateRe.test(k2))continue;
+      var n=D.notes[k2];
+      if(!n||typeof n!=='object')continue;
+      var o2={};
+      if(typeof n.t==='string')o2.t=n.t.slice(0,300);
+      if(typeof n.m==='number'&&n.m>=1&&n.m<=5&&n.m%1===0)o2.m=n.m;
+      if(o2.t||o2.m)notes[k2]=o2;
+    }
+    D.notes=notes;
+    if(!D.meta||typeof D.meta!=='object')D.meta={};
+    Object.keys(D.meta).forEach(function(k){if(typeof D.meta[k]!=='number'||!isFinite(D.meta[k]))delete D.meta[k];});
+  }catch(e){}
+  return D;
+}
 function mergeDocs(L,R,mode){
   var Lm=L.meta||{},Rm=R.meta||{},lv=enumerate(L),rvl=enumerate(R),keys={},out={},nm={},now=Date.now();
   [lv,rvl,Lm,Rm].forEach(function(o){Object.keys(o).forEach(function(p){keys[p]=true;});});
@@ -990,6 +1059,7 @@ function adoptLook(R){
 function onRemote(d){
   if(!CU||deleting)return;if(DEMO){pendRem={d:d};return;}
   var R=null;if(d&&typeof d.json==='string'){try{R=JSON.parse(d.json);}catch(e){}}
+  if(R)R=sanitizeDoc(R);
   if(R&&R.name&&!S.name){S.name=R.name;persist();applyHead();}
   adoptLook(R);
   if(R&&(S.uits||0)>(R.uits||0))pushSync();
@@ -1001,7 +1071,8 @@ function onRemote(d){
     setSync(OKMSG);return;
   }
   if(!S.owner&&hasLocal(S)){
-    pendingChoice={R:R||emptyDoc()};persist();render();setSync(CHOICE_MSG);return;
+    if(!R||!hasLocal(R)){S.owner=CU.uid;persist();render();pushSync();setSync(OKMSG);return;}
+    pendingChoice={R:R};persist();render();setSync(CHOICE_MSG);return;
   }
   if(R)mergeDocs(S,R,'take');else S=blankState();
   S.owner=CU.uid;persist();render();pushSync();setSync(OKMSG);
@@ -1012,7 +1083,7 @@ function resolveChoice(mode){
   mergeDocs(S,R,mode==='merge'?'merge':'take');
   S.owner=CU.uid;persist();render();pushSync();setSync(OKMSG);
 }
-function hideToast(){$('toast').classList.remove('show');}
+function hideToast(){var e=$('toast');e.classList.remove('show');setTimeout(function(){if(!e.classList.contains('show'))e.innerHTML='';},350);}
 function toastUndo(text,fn){
   var e=$('toast');pendingUndo=fn;
   e.innerHTML='<span>'+esc(text)+'</span><button id="undoBtn" class="mini" style="color:var(--bg);border-color:var(--bg);margin-left:8px;min-height:36px">Отменить</button>';
@@ -1062,6 +1133,7 @@ document.addEventListener('change',function(e){
   rd.onload=function(){
     try{
       var X=JSON.parse(rd.result);if(!X||!Array.isArray(X.habits)||typeof X.done!=='object'||!X.done)throw 0;
+      X=sanitizeDoc(X);
       if(!confirm(LANG==='en'?'Replace current habits with the backup data?':'Заменить текущие привычки данными из копии?'))return;
       var old=Object.keys(enumerate(S));mergeDocs(S,X,'take');if(CU)S.owner=CU.uid;
       old.concat(Object.keys(enumerate(S))).forEach(touch);
@@ -1552,7 +1624,11 @@ async function refresh(){
   if(!auth)return null;
   if(auth.expires>Date.now()+60000)return auth.idToken;
   const r=await pfetch('/token/v1/token?key='+encodeURIComponent(FIREBASE_CONFIG.apiKey),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({grant_type:'refresh_token',refresh_token:auth.refreshToken})});
-  if(!r.ok)throw mkErr('fs/' + r.status);
+  if(!r.ok){
+    let msg='';try{msg=(((await r.json()).error)||{}).message||'';}catch(e){}
+    if(/INVALID_REFRESH_TOKEN|USER_DISABLED|USER_NOT_FOUND|INVALID_ID_TOKEN/i.test(msg)){auth=null;persistAuth();emit();}
+    throw mkErr('fs/' + r.status);
+  }
   const d=await r.json();
   if(!d.id_token)throw mkErr('auth/network-request-failed');
   auth.idToken=d.id_token;auth.refreshToken=d.refresh_token;auth.localId=d.user_id;auth.expires=Date.now()+Number(d.expires_in||3600)*1000;
@@ -1580,32 +1656,34 @@ function setAuth(d){
   emit();
   return makeUser(d);
 }
-function fsU(){return goodProxy+'/fs/v1/projects/'+FIREBASE_CONFIG.projectId+'/databases/(default)/documents/users/';}
-function fsD(){return goodProxy+'/fs/v1/projects/'+FIREBASE_CONFIG.projectId+'/databases/(default)/documents/';}
+function fsU(){return '/fs/v1/projects/'+FIREBASE_CONFIG.projectId+'/databases/(default)/documents/users/';}
+function fsD(){return '/fs/v1/projects/'+FIREBASE_CONFIG.projectId+'/databases/(default)/documents/';}
 const PUSHC='push/';
 async function fsHeaders(){const t=await refresh();return {Authorization:'Bearer '+t,'Content-Type':'application/json'};}
-async function fsGet(uid){
+async function fsGet(uid,rt){
   const h=await fsHeaders();
   let r;
-  try{r=await pfetch(fsu()+encodeURIComponent(uid),{headers:h});}
+  try{r=await pfetch(fsU()+encodeURIComponent(uid),{headers:h});}
   catch(e){throw mkErr('auth/network-request-failed');}
+  if(r.status===401&&!rt){auth.expires=0;return fsGet(uid,true);}
   if(r.status===404)return null;
   if(!r.ok)throw mkErr('fs/' + r.status);
   const d=await r.json();
   const f=d.fields||{};
   return {json:f.json?f.json.stringValue:null,ts:f.ts?Number(f.ts.integerValue||f.ts.doubleValue||0):0};
 }
-async function fsSave(uid,data){
+async function fsSave(uid,data,rt){
   const h=await fsHeaders();
   let r;
-  try{r=await pfetch(fsu()+encodeURIComponent(uid),{method:'PATCH',headers:h,body:JSON.stringify({fields:{json:{stringValue:data.json},ts:{integerValue:String(data.ts||0)}}})});}
+  try{r=await pfetch(fsU()+encodeURIComponent(uid),{method:'PATCH',headers:h,body:JSON.stringify({fields:{json:{stringValue:data.json},ts:{integerValue:String(data.ts||0)}}})});}
   catch(e){throw mkErr('auth/network-request-failed');}
+  if(r.status===401&&!rt){auth.expires=0;return fsSave(uid,data,true);}
   if(!r.ok)throw mkErr('auth/network-request-failed');
 }
 async function fsDel(uid){
   const h=await fsHeaders();
   let r;
-  try{r=await pfetch(fsu()+encodeURIComponent(uid),{method:'DELETE',headers:h});}
+  try{r=await pfetch(fsU()+encodeURIComponent(uid),{method:'DELETE',headers:h});}
   catch(e){throw mkErr('auth/network-request-failed');}
   if(!r.ok&&r.status!==404)throw mkErr('auth/network-request-failed');
 }
@@ -1615,13 +1693,13 @@ async function fsSetPath(path,plain){
   const fields={};
   Object.keys(plain).forEach(function(k){fields[k]=(typeof plain[k]==='number')?{integerValue:String(plain[k])}:{stringValue:String(plain[k])};});
   let r;
-  try{r=await pfetch(fsd()+path,{method:'PATCH',headers:h,body:JSON.stringify({fields:fields})});}
+  try{r=await pfetch(fsD()+path,{method:'PATCH',headers:h,body:JSON.stringify({fields:fields})});}
   catch(e){throw mkErr('auth/network-request-failed');}
   if(!r.ok)throw mkErr('auth/network-request-failed');
 }
 async function fsDelPath(path){
   const h=await fsHeaders();
-  try{await pfetch(fsd()+path,{method:'DELETE',headers:h});}catch(e){}
+  try{await pfetch(fsD()+path,{method:'DELETE',headers:h});}catch(e){}
 }
 function vapidKey(){
   const b64=VAPID_PUBLIC.replace(/-/g,'+').replace(/_/g,'/');
@@ -1693,6 +1771,7 @@ window.attachCloud({
         next(d);
       }catch(e){
         if(stop)return;
+        if(!auth)return;
         err(e);
       }
       if(!stop)setTimeout(poll,25000);
