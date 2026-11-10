@@ -1,4 +1,4 @@
-{
+ {
  "name": "Sledka — трекер привычек",
  "short_name": "Sledka",
  "lang": "ru",
@@ -23,6 +23,29 @@
    "sizes": "512x512",
    "type": "image/png",
    "purpose": "maskable"
+  }
+ ],
+ "shortcuts": [
+  {
+   "name": "Новая привычка",
+   "short_name": "Новая",
+   "description": "Добавить привычку",
+   "url": "./?open=add",
+   "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+  },
+  {
+   "name": "Итоги и статистика",
+   "short_name": "Итоги",
+   "description": "Открыть статистику",
+   "url": "./?open=stats",
+   "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+  },
+  {
+   "name": "Недельный обзор",
+   "short_name": "Обзор",
+   "description": "Прошлая неделя и цель на новую",
+   "url": "./?open=review",
+   "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
   }
  ]
 }
