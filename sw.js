@@ -1,4 +1,4 @@
-const C='habits-v47',D='habits-data',UKEY='push-uid',LKEY='push-lang',PKEY='push-key',SHELL=['./','index.html','privacy.html','manifest.webmanifest','icon-180.png','icon-192.png','icon-512.png','icon-maskable-512.png','fonts/lora-cyrillic-wght-normal.woff2','fonts/lora-latin-wght-normal.woff2','fonts/manrope-cyrillic-wght-normal.woff2','fonts/manrope-latin-wght-normal.woff2','fonts/nunito-cyrillic-wght-normal.woff2','fonts/nunito-latin-wght-normal.woff2','fonts/onest-cyrillic-wght-normal.woff2','fonts/onest-latin-wght-normal.woff2'];
+const C='habits-v48',D='habits-data',UKEY='push-uid',LKEY='push-lang',PKEY='push-key',SHELL=['./','index.html','privacy.html','manifest.webmanifest','icon-180.png','icon-192.png','icon-512.png','icon-maskable-512.png','fonts/lora-cyrillic-wght-normal.woff2','fonts/lora-latin-wght-normal.woff2','fonts/manrope-cyrillic-wght-normal.woff2','fonts/manrope-latin-wght-normal.woff2','fonts/nunito-cyrillic-wght-normal.woff2','fonts/nunito-latin-wght-normal.woff2','fonts/onest-cyrillic-wght-normal.woff2','fonts/onest-latin-wght-normal.woff2'];
 const PROXY='https://api.sledka.ru',PROXY2='https://sledkasync.arlen-eupov.workers.dev';
 const VAPID='BN0eSEdGKrchANnTWs6t8SWkqcmcKb0cZyRIgsW1vB1cc0ywjjSZ9pKYVdc85sj_0wghb4y2SFdd9OazeiaPJ88';
 function b64u(s){s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';const b=atob(s),a=new Uint8Array(b.length);for(let i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return a.buffer;}
@@ -38,14 +38,34 @@ self.addEventListener('fetch',e=>{
 
 self.addEventListener('notificationclick',function(e){
   e.notification.close();
+  if(e.action==='done'){
+    var dd=e.notification.data||{};
+    e.waitUntil((async function(){
+      try{
+        if(!dd.id)return;
+        const c=await caches.open(D);
+        let cur={marks:{}};
+        const m=await c.match('pending-marks');
+        if(m)cur=await m.json();
+        cur.marks=cur.marks||{};
+        cur.marks[dd.id]=dd.k||new Date().toISOString().slice(0,10);
+        await c.put('pending-marks',new Response(JSON.stringify(cur)));
+        const cs=await clients.matchAll({type:'window',includeUncontrolled:true});
+        cs.forEach(function(cl){cl.postMessage({type:'pending-mark'});});
+      }catch(_){}
+    })());
+    return;
+  }
   e.waitUntil(clients.matchAll({type:'window',includeUncontrolled:true}).then(function(cs){
     for(var i=0;i<cs.length;i++){var c=cs[i];if(c.url.indexOf(self.location.origin)===0)return c.focus();}
     return clients.openWindow(self.location.origin + '/');
   }));
 });
 
-function notify(t,b,tag,id){
-  return self.registration.showNotification(t,{body:b||'',tag:tag,icon:'icon-192.png',badge:'icon-192.png',data:{id:id||''}});
+function notify(t,b,tag,id,extra){
+  const opt={body:b||'',tag:tag,icon:'icon-192.png',badge:'icon-192.png',data:{id:id||'',k:(extra&&extra.k)||''}};
+  if(extra&&extra.act)opt.actions=[{action:'done',title:(extra.lang==='en'?'✓ Done':'✓ Сделано')}];
+  return self.registration.showNotification(t,opt);
 }
 function itemsFromPayload(d){
   if(!d)return null;
@@ -63,12 +83,12 @@ function fetchItems(uid){
 self.addEventListener('push',function(e){
   e.waitUntil((async function(){
     var d=null;try{d=e.data?e.data.json():null;}catch(_){}
+    var lang=(d&&d.lang)||await get(LKEY);
     var items=itemsFromPayload(d);
     if(items){
-      for(var i=0;i<items.length;i++)await notify(items[i].title||'Sledka',items[i].body,'sledka-'+(items[i].id||i),items[i].id||'');
+      for(var i=0;i<items.length;i++)await notify(items[i].title||'Sledka',items[i].body,'sledka-'+(items[i].id||i),items[i].id||'',{k:items[i].k||'',act:!!items[i].act,lang:lang});
       return;
     }
-    var lang=(d&&d.lang)||await get(LKEY);
     var gen=lang==='en'?'Check your habits today':'Проверь привычки сегодня';
     var uid=(d&&d.uid)||'';
     if(!uid)uid=await get(UKEY);
